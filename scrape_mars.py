@@ -6,7 +6,7 @@ import time
 import pandas as pd
 
 #Create "Scrape" function
-def Scrape():
+def scrape():
 
                 ############# NASA Mars News #############
 
@@ -154,15 +154,17 @@ def Scrape():
     returns = soup.find('div', 'collapsible results')
 
     #Retrieve all anchors in each class pulled above
-    hemispheres = returns.find_all('a')
+    hemispheres = returns.find_all('div', {"class": 'description'})
 
     #Create empty list to hold dictionaries
     hemisphere_image_urls = []
 
     #Loop through all anchors for each hemisphere class
-    for a in hemispheres:
+    for description in hemispheres:
+        a = description.find('a')
+
         #Retrieve title and link to specific hemisphere page
-        title = a.h3
+        title = a.h3.text
         link = 'https://astrogeology.usgs.gov' + a['href']
         
         #Visit above link
@@ -187,8 +189,8 @@ def Scrape():
         "news_p": news_p, 
         "featured_image_url": featured_image_url, 
         "mars_weather": mars_weather, 
-        "fact_table": mars_facts, 
-        "hemisphere_images": hemisphere_image_urls}
+        "fact_table": html_table, 
+        "hemispheres_images": hemisphere_image_urls}
     
 
     return mars_dict

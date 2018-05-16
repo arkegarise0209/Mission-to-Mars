@@ -1,31 +1,33 @@
-# Dependencies
-from flask import Flask, jsonify, render_template, redirect
-#import pymongo
+#Dependencies
+from flask import Flask, render_template, jsonify, redirect
 from flask_pymongo import PyMongo
 import scrape_mars
 
+
 app = Flask(__name__)
+
 
 mongo = PyMongo(app)
 
-@app.route("/")
+@app.route('/')
 def index():
-    mars_info = db.mars.find_one()
+   mars = mongo.db.mars.find_one()
+   return render_template('index.html', mars = mars)
 
-    return render_template("index.html", mars_info=mars_info)
 
-@app.route("/scrape")
+@app.route('/scrape')
 def scrape():
-    mars_info = db.mars
-    mars_data = scrape_mars.Scrape()
-    mars_info.update(
-        {},
-        mars_data,
-        upsert = True
-    )
+   mars_data = mongo.db.mars
+   data = scrape_mars.scrape()
 
-    return redirect("http://localhost:5000/", code=302)
+   mars_data.update(
+       {},
+       data,
+       upsert=True
+   )
 
-    
+   return redirect("http://localhost:5000/", code=302)
+
+
 if __name__ == "__main__":
-    app.run(debug=False)
+   app.run(debug=True)
